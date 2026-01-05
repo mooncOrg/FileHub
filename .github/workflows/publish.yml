@@ -36,8 +36,8 @@ jobs:
           context: ./backend # 这里的路径必须对应你的子目录
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/filehub-backend:${{ github.event.inputs.version }}
-            ghcr.io/${{ github.repository_owner }}/filehub-backend:latest
+            ghcr.io/dancingcodes/filehub-backend:${{ github.event.inputs.version }}
+            ghcr.io/dancingcodes/filehub-backend:latest
 
       - name: 远程部署
         uses: appleboy/ssh-action@v1.0.3
@@ -70,5 +70,5 @@ jobs:
           context: ./frontend # 指向前端目录
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/filehub-frontend:${{ github.event.inputs.version }}
-            ghcr.io/${{ github.repository_owner }}/filehub-frontend:latest
+            ghcr.io/dancingcodes/filehub-frontend:${{ github.event.inputs.version }}
+            ghcr.io/dancingcodes/filehub-frontend:latest
