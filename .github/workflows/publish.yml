@@ -23,14 +23,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Log in to GHCR
+      - name: 登录 GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & Push Backend
+      - name: 打包 & 推送后端镜像
         uses: docker/build-push-action@v5
         with:
           context: ./backend # 这里的路径必须对应你的子目录
@@ -38,6 +38,18 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository_owner }}/filehub-backend:${{ github.event.inputs.version }}
             ghcr.io/${{ github.repository_owner }}/filehub-backend:latest
+
+      - name: 远程部署
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/filehub
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            docker-compose pull backend
+            docker-compose up -d backend
 
   # --- 前端构建任务 ---
   build-frontend:
