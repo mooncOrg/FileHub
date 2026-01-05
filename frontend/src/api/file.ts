@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import type { ResData } from './types'
 
 /**
  * 上传文件
@@ -10,7 +9,7 @@ export const uploadFileApi = (
     formData: FormData,
     onProgress: (percent: number) => void
 ) => {
-    return request.post<ResData<string>>('/upload', formData, {
+    return request.post('/upload', formData, {
         // 处理 Axios 上传进度
         onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
