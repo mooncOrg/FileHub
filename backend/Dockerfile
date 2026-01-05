@@ -1,0 +1,12 @@
+FROM golang:1.21-alpine AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN --mount=type=cache,target=/go/pkg/mod go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o backend .
+
+FROM alpine:latest
+WORKDIR /app
+COPY --from=builder /app/backend .
+EXPOSE 10001
+CMD ["./backend"]
