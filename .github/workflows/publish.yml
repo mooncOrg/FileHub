@@ -1,5 +1,5 @@
 name: Manual Publish
-
+run-name: Deploy ${{ github.event.inputs.version }} to ${{ github.event.inputs.target }} by @${{ github.actor }}
 on:
   workflow_dispatch:
     inputs:
