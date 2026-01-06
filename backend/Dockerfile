@@ -9,4 +9,4 @@ FROM alpine:latest
 WORKDIR /app
 COPY --from=builder /app/backend .
 EXPOSE 10001
-CMD ["sh", "-c", "umask 0022 && ./backend"]
+CMD ["./backend"]
