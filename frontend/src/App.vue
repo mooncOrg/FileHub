@@ -5,15 +5,19 @@
             @dragenter.prevent @drop.prevent="handleDrop">
             <input ref="fileIptRef" type="file" class="fileIpt" @change="handleFileChange" />
             <div class="uploadTips">
-                点击、拖拽或粘贴文件至此处，即刻获取在线链接
+                {{ isUploading ? `上传进度：${uploadProgress}%` : '点击、拖拽或粘贴文件至此处，即刻获取在线链接' }}
             </div>
+        </div>
+        <div class="uploadResult" v-if="fileUrl">
+            <div class="fileUrlText">{{ fileUrl }}</div>
+            <div class="copyBtn" @click="copyText(fileUrl)">复制</div>
         </div>
     </div>
 
     <Toaster position="top-center" />
 </template>
 <script setup lang="ts">
-import { Toaster } from 'vue-sonner'
+import { Toaster, toast } from 'vue-sonner'
 import { uploadFileApi } from '@/api/file'
 import { ref, onMounted, onUnmounted } from 'vue'
 onMounted(() => {
@@ -27,6 +31,7 @@ onUnmounted(() => {
 const fileIptRef = ref<HTMLInputElement | null>(null)
 const isUploading = ref(false)
 const fileUrl = ref('')
+const uploadProgress = ref(0)
 
 const handleClick = () => {
     if (isUploading.value) return
@@ -61,19 +66,27 @@ const handleFileChange = async (e: Event) => {
 
 
 const uploadFile = (file: File) => {
+    uploadProgress.value = 0
     isUploading.value = true
     const formData = new FormData()
     formData.append('file', file)
 
 
     uploadFileApi(formData, (progress) => {
-        console.log(`上传进度: ${progress}%`)
+        console.log(progress);
+        
+        uploadProgress.value = progress
     }).then((res) => {
         fileUrl.value = `http://filehubapi.moomc.love/uploads/${res.data.file_uuid}`
     }).finally(() => {
         isUploading.value = false
         if (fileIptRef.value) fileIptRef.value.value = ''
     })
+}
+
+const copyText = (text: string) => {
+    navigator.clipboard.writeText(text)
+    toast.success('已复制到剪贴板')
 }
 
 
@@ -113,14 +126,6 @@ const uploadFile = (file: File) => {
             display: none;
         }
 
-        .uploadTips {
-            font-size: 24px;
-        }
-
-
-
-
-
         @keyframes pulseGlow {
             0% {
                 border-color: rgba($color: #ccc, $alpha: 0.5);
@@ -141,11 +146,46 @@ const uploadFile = (file: File) => {
         &.loadingState {
             animation: pulseGlow 1.5s infinite;
             cursor: wait;
+        }
+    }
 
-            .uploadTips {
-                display: none;
+
+    .uploadResult {
+        margin-top: 20px;
+        border-radius: 8px;
+        border: 2px dashed #ccc;
+        width: 60%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 12px;
+        box-sizing: border-box;
+        gap: 8px;
+
+
+        .fileUrlText {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 20px;
+        }
+
+        .copyBtn {
+            background-color: #ccc;
+            color: #1a1a1a;
+            border-radius: 4px;
+            padding: 2px 12px;
+            box-sizing: border-box;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+
+            &:hover {
+                background-color: #fff;
             }
         }
     }
+
 }
 </style>
