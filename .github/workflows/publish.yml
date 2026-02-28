@@ -21,7 +21,6 @@ jobs:
   build-backend:
     if: ${{ github.event.inputs.target == 'backend' || github.event.inputs.target == 'all' }}
     runs-on: ubuntu-latest
-    permissions: write-all
     steps:
       - uses: actions/checkout@v4
       - name: 登录 GHCR
