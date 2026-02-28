@@ -47,7 +47,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /opt/filehub
-            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             docker compose pull backend
             docker compose up -d backend
 
@@ -88,11 +87,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /opt/filehub/frontend
-            
             mkdir -p backups
-            
             cp dist.tar.gz backups/frontend-${{ github.event.inputs.version }}.tar.gz
-            
             tar -xzf dist.tar.gz
-            
             rm dist.tar.gz
